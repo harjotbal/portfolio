@@ -110,7 +110,7 @@ html{scroll-behavior:smooth}
 .cakecv{position:absolute;inset:0;width:100%;height:100%;display:block}
 :root{--cakebase:#EEFBFC}
 .cake-spr .cake .glass:not(.key){background:linear-gradient(135deg,rgba(255,255,255,.93),rgba(255,255,255,.8))}.cake-spr .cake .glass-dark{background:rgba(255,255,255,.9)}
-.cspb{position:absolute;left:0;right:0}.cspfg{position:absolute;inset:0;pointer-events:none;overflow:hidden}.cspfix{position:fixed;inset:0}.cspf{position:absolute;left:0;top:0;border-radius:999px;will-change:transform}
+.cspb{position:absolute;left:0;right:0}.cspfg{position:absolute;inset:0;pointer-events:none;overflow:hidden}.cspfix{position:fixed;inset:0}.cspbfix{position:fixed!important;top:0!important;left:0;right:0;height:100vh;height:100lvh;overflow:hidden}.cspf{position:absolute;left:0;top:0;border-radius:999px;will-change:transform}
 .csp{position:absolute;top:0;border-radius:999px;animation:cspFall var(--t) linear var(--d) infinite;animation-play-state:paused}
 .cspb.on .csp{animation-play-state:running}
 .still .csp{animation-play-state:paused!important}
@@ -311,7 +311,7 @@ const CAKE_SPRINKLE_SETTLE = true;
 // CSP_MID_BOOST: how much denser the sprinkles are over the middle of the page (the content column, 15%–85% of the width) than a uniform spread (1 = uniform)
 const CSP_MID_BOOST = 1.25;
 const cspX = (W) => { const a = 0.15, b = 0.85, share = Math.min(1, (b - a) * CSP_MID_BOOST); if (Math.random() < share) return W * (a + Math.random() * (b - a)); const r = Math.random() * (1 - (b - a)); return W * (r < a ? r : b + (r - a)); };
-const SPRINKLE_FALL_FIXED = true; // falling front sprinkles ignore scrolling (false = previous)
+const SPRINKLE_FALL_FIXED = true; const CSP_BG_FIXED = true; // background sprinkles fall in one screen-pinned layer, so scrolling never carries them along with the page (false = page-anchored bands) // falling front sprinkles ignore scrolling (false = previous)
 const CSP_FG_Z = 0.75; // sprinkles at this depth or closer share the content's plane (25% of all sprinkles; was 0.8 = 20%)
 const CSP_HDR_SETTLE = false; // false = sprinkles never rest on the header (landing logo or floating bar); ones resting on content that slides under the floating bar drop off
 const CSP_LOGO_RICOCHET = true; // true = a sprinkle bouncing off one letter can land on / slide off the next letter instead of jumping out to the logo's outer edge
@@ -441,13 +441,13 @@ const cspFG = () => {
 };
 const cakeSprinkles = (host, W, H) => {
   cspFG();
-  const B = CSP_BAND, nb = Math.ceil(H / B);
+  const vhF = Math.max(500, window.innerHeight || 800), B = CSP_BG_FIXED ? vhF : CSP_BAND, nb = CSP_BG_FIXED ? 1 : Math.ceil(H / B);
   const u = Math.max(0.7, Math.min(1.2, W / 1440));
   const per = Math.round(33.75 * (B / 800) * (0.3 + 0.7 * Math.min(1.3, W / 1280)));
   const frag = document.createDocumentFragment(), bands = [];
   for (let b = 0; b < nb; b++) {
-    const band = document.createElement('div'); band.className = 'cspb';
-    band.style.cssText = 'top:' + (b * B) + 'px;height:' + B + 'px';
+    const band = document.createElement('div'); band.className = CSP_BG_FIXED ? 'cspb cspbfix on' : 'cspb';
+    band.style.cssText = CSP_BG_FIXED ? '' : 'top:' + (b * B) + 'px;height:' + B + 'px';
     for (let i = 0; i < per; i++) {
       const z = (CAKE_SPRINKLE_SETTLE && CSP_SHAPE === 'sprinkle' ? CSP_FG_Z : 1) * Math.random(), rod = Math.random() < 0.75, c = CSP_COL[Math.floor(Math.random() * CSP_COL.length)], k = (0.6 + z * 1.4) * u * 0.544;
       const ros = CSP_SHAPE === 'rosette', rd = ros ? (14 + z * 22) * u : 0;
@@ -455,7 +455,7 @@ const cakeSprinkles = (host, W, H) => {
       const t = 1.3 * (40 - z * 22) * (B + 120) / 860;
       const sp = document.createElement('span'); sp.className = 'csp';
       sp.style.cssText = 'left:' + cspX(W).toFixed(0) + 'px;width:' + w.toFixed(1) + 'px;height:' + h.toFixed(1) + 'px;background:' + (ros ? 'url("' + CSP_ROSETTES[Math.floor(Math.random() * CSP_ROSETTES.length)] + '") center/contain no-repeat;border-radius:0' : c) + ';opacity:' + (0.55 + z * 0.45).toFixed(2) +
-        ';--r0:' + r0 + 'deg;--r1:' + (r0 + (Math.random() < 0.5 ? -1 : 1) * (ros ? 60 + Math.random() * 140 : 180 + Math.random() * 360)).toFixed(0) + 'deg;--dx:' + ((Math.random() - 0.5) * 160).toFixed(0) + 'px;--fy:' + (B + 60) + 'px;--t:' + t.toFixed(1) + 's;--d:-' + (Math.random() * t).toFixed(1) + 's'
+        ';--r0:' + r0 + 'deg;--r1:' + (r0 + (Math.random() < 0.5 ? -1 : 1) * (ros ? 60 + Math.random() * 140 : 180 + Math.random() * 360)).toFixed(0) + 'deg;--dx:' + ((Math.random() - 0.5) * 160).toFixed(0) + 'px;--fy:' + (CSP_BG_FIXED ? 'calc(100lvh + 60px)' : (B + 60) + 'px') + ';--t:' + t.toFixed(1) + 's;--d:-' + (Math.random() * t).toFixed(1) + 's'
         + (ros ? '' : ';box-shadow:0 2px 2px rgba(91,52,30,.18),inset 0 1px 0 rgba(255,255,255,.55)' + (c === '#FFFFFF' ? ',0 0 0 1px rgba(91,52,30,.14)' : '')) + (z < 0.2 ? ';filter:blur(1.5px)' : '');
       band.appendChild(sp);
     }
@@ -464,7 +464,7 @@ const cakeSprinkles = (host, W, H) => {
   if (host._cspIO) host._cspIO.disconnect();
   if (window.IntersectionObserver) {
     host._cspIO = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle('on', e.isIntersecting)), { rootMargin: '200px 0px' });
-    bands.forEach((b) => host._cspIO.observe(b));
+    if (!CSP_BG_FIXED) bands.forEach((b) => host._cspIO.observe(b));
   } else bands.forEach((b) => b.classList.add('on'));
   return frag;
 };
