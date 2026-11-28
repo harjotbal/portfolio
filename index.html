@@ -120,7 +120,7 @@ a{color:#FBE9DC}a:hover{color:#FFFFFF}
 .asbtn{--tilt:0deg!important}
 .tx-tilt:not(.asbtn)>.backface{transition:none!important} /* the Enter face vanishes at the spin's edge-on moment instead of fading over the keys */
 .asbtn>.surf{inset:calc(50% - 26px) calc(50% - 92.5px);border-radius:999px}
-.asbtn>.backface{inset:calc(50% - 26px) calc(50% - 92.5px);width:auto;height:auto;border-radius:999px;flex-direction:row;gap:12px}
+.asbtn>.backface{inset:calc(50% - 26px) calc(50% - 92.5px);width:auto;height:auto;border-radius:999px;flex-direction:row;gap:12px}@media (max-width:529px){.asbtn>.surf,.asbtn>.backface{inset:calc(50% - 26px) calc(50% - min(130px, 50vw - 24px))}} /* ENTER_MATCH_CTA: on phones the Enter pill is 260 wide like the stacked Résumé / LinkedIn buttons (delete to undo) */
 .asbtn>.backface svg{width:18px;height:18px;stroke-width:1.6}
 .asbtn>.backface span{font:600 13px/1 Josefin Sans,Futura,sans-serif!important;letter-spacing:.22em!important;padding-left:0!important;margin-right:-.22em;text-box:trim-both cap alphabetic;display:block} /* box = the capital letters only, so centring lines the caps up with the lock; trailing letter-space cancelled so the pair is centred in the pill */
 .asbtn>.backface svg{display:block;flex:none;margin-left:-3.75px} /* the lock's drawing starts 5/24 in: pull the empty edge out so the visible pair is centred */
